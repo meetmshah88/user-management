@@ -6,12 +6,16 @@ import connectDB from "./database/db";
 import userRoutes from "./routes/userRouter";
 import { errorHandler } from "./handlers/errorHandler";
 import { allRoutesHandler } from "./handlers/allRoutesHandler";
+import { trimRequestBody } from "./handlers/trimRequestBodyHandler";
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+//This middleware is used to removes whitespace from both sides of a string in request body
+app.use(trimRequestBody);
 
 //Handle All Users Management Routes
 app.use("/api", userRoutes);

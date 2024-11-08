@@ -19,6 +19,12 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     }
 
     try {
+        const isUserExist = await User.findOne({ emailId });
+
+        if(isUserExist){
+            throwError("User is already exist", 400);
+        }
+
         const newUser = new User({ firstName, lastName, emailId });
         await newUser.save();
         res.status(201).json(newUser);

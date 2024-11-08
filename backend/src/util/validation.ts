@@ -1,10 +1,18 @@
 import { Request } from "express";
 
-export const isValidName = (name: string): boolean => {
+export const isValidName = (name: string | null | undefined): boolean => {
+    if (!name) {
+        return false;
+    }
+
     return /^[A-Za-z]+$/.test(name);
 }
 
-export const isValidEmail = (email: string): boolean => {
+export const isValidEmail = (email: string | null | undefined): boolean => {
+    if (!email) {
+        return false;
+    }
+
     return /^\S+@\S+\.\S+$/.test(email);
 }
 

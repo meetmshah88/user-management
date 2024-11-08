@@ -1,4 +1,3 @@
-export interface Error {
+export interface ErrorType extends Error {
   status?: number;
-  message?: string;
 }

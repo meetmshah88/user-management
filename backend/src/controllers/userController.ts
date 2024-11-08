@@ -5,23 +5,23 @@ import { isValidName, isValidEmail, validatedCreateUserData } from "../util/vali
 import { throwError } from "../util/error";
 
 export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-
-    if (!validatedCreateUserData(req)) {
-        throwError("Bad Request", 400);
-    }
-
-    const { firstName, lastName, emailId } = req.body;
-
-    const isInvalidInput = !isValidName(firstName) || !isValidName(lastName) || !isValidEmail(emailId);
-
-    if (isInvalidInput) {
-        throwError("Bad Request", 400);
-    }
-
     try {
+
+        if (!validatedCreateUserData(req)) {
+            throwError("Bad Request", 400);
+        }
+
+        const { firstName, lastName, emailId } = req.body;
+
+        const isInvalidInput = !isValidName(firstName) || !isValidName(lastName) || !isValidEmail(emailId);
+
+        if (isInvalidInput) {
+            throwError("Bad Request", 400);
+        }
+
         const isUserExist = await User.findOne({ emailId });
 
-        if(isUserExist){
+        if (isUserExist) {
             throwError("User is already exist", 400);
         }
 

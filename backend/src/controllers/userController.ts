@@ -10,16 +10,16 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
         throwError("Bad Request", 400);
     }
 
-    const { firstName, lastName, email } = req.body;
+    const { firstName, lastName, emailId } = req.body;
 
-    const isInvalidInput = !isValidName(firstName) || !isValidName(lastName) || !isValidEmail(email);
+    const isInvalidInput = !isValidName(firstName) || !isValidName(lastName) || !isValidEmail(emailId);
 
     if (isInvalidInput) {
         throwError("Bad Request", 400);
     }
 
     try {
-        const newUser = new User({ firstName, lastName, email });
+        const newUser = new User({ firstName, lastName, emailId });
         await newUser.save();
         res.status(201).json(newUser);
     } catch (error) {

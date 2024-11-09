@@ -36,7 +36,7 @@ connectDB()
       console.log(`Server running on port ${PORT}`);
     });
   })
-  .catch((err) => {
+  .catch(() => {
     console.error("Database cannot be connected!!");
   });
 

@@ -1,4 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
+import { IUser } from "../types/types";
+
+// Define a document interface that extends both IUser and Document
+export interface IUserDocument extends IUser, Document {}
 
 const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true, maxlength: 100 },
@@ -10,4 +14,6 @@ const userSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-export default mongoose.model("User", userSchema);
+const User: Model<IUserDocument> = mongoose.model<IUserDocument>('User', userSchema);
+
+export default User;

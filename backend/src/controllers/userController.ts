@@ -27,7 +27,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
         const newUser = new User({ firstName, lastName, emailId });
         await newUser.save();
-        res.status(201).json(newUser);
+        res.status(201).json({ message: 'User Added!' });
     } catch (error) {
         next(error);
     }
@@ -35,7 +35,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const users = await User.find();
+        const users = await User.find().sort({ createdAt: "desc" });
         res.json(users);
     } catch (error) {
         next(error);

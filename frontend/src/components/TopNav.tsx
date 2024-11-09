@@ -21,9 +21,9 @@ const TopNav: React.FC = () => {
         >
           <Tab
             label="List of Users"
-            value="/users"
+            value="/"
             component={Link}
-            to="/users"
+            to="/"
           />
           <Tab
             label="Create User"

@@ -8,7 +8,7 @@ const App : React.FC = () => {
     <BrowserRouter>
       <TopNav />
       <Routes>
-        <Route path="/users" element={<UserList />} />
+        <Route path="/" element={<UserList />} />
         <Route path="/create-user" element={<CreateUser />} />
       </Routes>
     </BrowserRouter>

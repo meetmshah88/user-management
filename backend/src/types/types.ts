@@ -5,5 +5,5 @@ export interface ErrorType extends Error {
 export interface IUser {
   firstName: string;
   lastName: string;
-  email: string;
+  emailId: string;
 }

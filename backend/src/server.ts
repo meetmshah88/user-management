@@ -10,7 +10,7 @@ import { trimRequestBody } from "./handlers/trimRequestBodyHandler";
 
 dotenv.config();
 
-const app = express();
+export const app = express();
 app.use(cors());
 app.use(express.json());
 
@@ -26,18 +26,15 @@ app.use(allRoutesHandler);
 //Handle All Errors across express application
 app.use(errorHandler);
 
-let server;
 connectDB()
   .then(() => {
     console.log("Database connection established...");
     const PORT = process.env.PORT || 5000;
 
-    server = app.listen(PORT, () => {
+    app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   })
   .catch(() => {
     console.error("Database cannot be connected!!");
   });
-
-export default server;

@@ -82,6 +82,11 @@ The **Create User** API expects a JSON payload to add a new user to the system. 
 
 #### Frontend Unit Tests
 
+Run below script to run the frontend test cases in `frontend` repo.
+```bash
+npm run test
+```
+
 **Testing Library**: Jest, React Testing Library
 - **UserList Component**:
   - **Test Case 1**: should render table with user data.
@@ -94,6 +99,11 @@ The **Create User** API expects a JSON payload to add a new user to the system. 
   - **Test Case 1**: should render TopNav with correct tabs and selected tab based on location.
 
 #### Backend Unit Tests
+
+Run below script to run the backend test cases in `backend` repo.
+```bash
+npm run test
+```
 
 **Testing Library**: Jest, Supertest
 - **POST /api/users**:
@@ -111,6 +121,16 @@ The **Create User** API expects a JSON payload to add a new user to the system. 
 Make sure that the frontend server is running before you run Cypress tests.
 
 Your running server of frontend (e.g. http://localhost:3000/) then the same needs to be configured in `cypress.config.ts` file with `baseUrl` attribute. 
+
+To open Cypress and interact with the Test Runner UI:
+```bash
+npm run cypress:open
+```
+
+To run Cypress tests in headless mode (useful for CI pipelines):
+```bash
+npm run cypress:run
+```
 
 **Testing Tool**: Cypress
 - **List Users E2E**:

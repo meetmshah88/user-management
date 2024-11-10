@@ -6,6 +6,7 @@
     "clean": "rimraf ./build",
     "build": "npm-run-all check test clean && tsc",
     "start": "node build/src/server",
+    "prod:start": "npm-run-all build start",
     "local": "ts-node src/server",
     "local:watch": "nodemon src -e ts,json --exec \"npm run local\"",
     "test": "jest",

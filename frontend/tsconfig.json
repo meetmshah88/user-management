@@ -3,7 +3,7 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ],
+  ],  
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
@@ -15,7 +15,6 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node", "jest", "@testing-library/jest-dom"],
-  },
-  "include": ["tests/**/*"]
+    "types": ["node", "jest", "@testing-library/jest-dom", "cypress"],
+  }
 }

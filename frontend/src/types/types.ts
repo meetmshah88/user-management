@@ -1,8 +1,8 @@
 export interface UserType {
     _id: string,
     firstName: string,
-    lastName: String,
-    emailId: String
+    lastName: string,
+    emailId: string
 }
 
 export interface UserFormData {

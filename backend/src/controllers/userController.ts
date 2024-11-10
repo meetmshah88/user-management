@@ -13,12 +13,14 @@ export const createUser = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
+    //Guard for received request body. Only expected fields should be part of request body.
     if (!validatedCreateUserData(req)) {
       throwError("Bad Request", 400);
     }
 
     const { firstName, lastName, emailId } = req.body;
 
+    //Validations on the each fields of request body
     const isInvalidInput =
       !isValidName(firstName) ||
       !isValidName(lastName) ||
@@ -28,6 +30,7 @@ export const createUser = async (
       throwError("Bad Request", 400);
     }
 
+    //verify if the emailId is already available in the database.
     const isUserExist = await User.findOne({ emailId });
 
     if (isUserExist) {

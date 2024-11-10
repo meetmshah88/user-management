@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import CreateUser from "./CreateUserContainer";
+import CreateUser from "../CreateUserContainer";
 
 describe("CreateUser Component", () => {
   test("should render the form with input fields", () => {

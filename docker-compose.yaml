@@ -8,8 +8,8 @@ services:
     ports:
       - "5000:5000"
     environment:
-      MONGO_URI: mongodb+srv://meetmshah88:gJiS1jksOe46VG36@cluster0.mh0nb.mongodb.net/userManagement
-      NODE_ENV: "production"
+      MONGO_URI: ${MONGO_URI}
+      NODE_ENV: ${NODE_ENV}
     depends_on:
       - frontend
 

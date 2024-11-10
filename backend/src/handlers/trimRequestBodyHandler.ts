@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 export const trimRequestBody = (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction,
 ): void => {
   if (req.body && typeof req.body === "object") {

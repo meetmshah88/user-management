@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe("User List Page", () => {
   const apiUrl = "/api/users";
 

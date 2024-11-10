@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { act } from "react";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import UserList from "./UsersListContainer";
+import UserList from "../UsersListContainer";
 
 const mockAxios = new MockAdapter(axios);
 

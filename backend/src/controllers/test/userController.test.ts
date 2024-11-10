@@ -1,21 +1,21 @@
-import { createUser, getUsers } from "../controllers/userController";
+import { createUser, getUsers } from "../userController";
 import { Request, Response, NextFunction } from "express";
-import { validatedCreateUserData } from "../util/validation";
-import { isValidName, isValidEmail } from "../util/validation";
-import { throwError } from "../util/error";
-import User from "../models/User";
+import { validatedCreateUserData } from "../../util/validation";
+import { isValidName, isValidEmail } from "../../util/validation";
+import { throwError } from "../../util/error";
+import User from "../../models/User";
 
-jest.mock("../util/validation", () => ({
+jest.mock("../../util/validation", () => ({
   validatedCreateUserData: jest.fn(),
   isValidName: jest.fn(),
   isValidEmail: jest.fn(),
 }));
 
-jest.mock("../util/error", () => ({
+jest.mock("../../util/error", () => ({
   throwError: jest.fn(),
 }));
 
-jest.mock("../models/User", () => ({
+jest.mock("../../models/User", () => ({
   findOne: jest.fn(),
   create: jest.fn(),
   find: jest.fn().mockReturnThis(),
@@ -129,16 +129,16 @@ describe("User Controller Tests", () => {
       const mockUsers = [
         {
           _id: "1",
-          firstName: "John",
-          lastName: "Doe",
-          emailId: "john@example.com",
+          firstName: "Meet",
+          lastName: "Shah",
+          emailId: "meetshah@example.com",
           createdAt: Date.now(),
         },
         {
           _id: "2",
-          firstName: "Jane",
-          lastName: "Doe",
-          emailId: "jane@example.com",
+          firstName: "Nisarg",
+          lastName: "Shah",
+          emailId: "nisargshah@example.com",
           createdAt: Date.now() + 10,
         },
       ];

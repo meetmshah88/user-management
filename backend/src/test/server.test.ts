@@ -1,36 +1,36 @@
 import request from "supertest";
 import mongoose from "mongoose";
 import { Server } from "http";
-import connectDB from "./database/db";
-import { app } from "./server";
+import connectDB from "../database/db";
+import { app } from "../server";
 
-jest.mock("./database/db", () => ({
+jest.mock("../database/db", () => ({
   __esModule: true,
   default: jest.fn().mockResolvedValue(true),
 }));
 
-jest.mock("./routes/userRouter", () => ({
+jest.mock("../routes/userRouter", () => ({
   __esModule: true,
   default: jest.fn((_req, res, _next) =>
     res.status(200).json({ message: "User Route" }),
   ),
 }));
 
-jest.mock("./handlers/errorHandler", () => ({
+jest.mock("../handlers/errorHandler", () => ({
   __esModule: true,
   errorHandler: jest.fn((_err, _req, res, _next) =>
     res.status(500).json({ message: "Error" }),
   ),
 }));
 
-jest.mock("./handlers/allRoutesHandler", () => ({
+jest.mock("../handlers/allRoutesHandler", () => ({
   __esModule: true,
   allRoutesHandler: jest.fn((_req, res, _next) =>
     res.status(404).json({ message: "Route not found" }),
   ),
 }));
 
-jest.mock("./handlers/trimRequestBodyHandler", () => ({
+jest.mock("../handlers/trimRequestBodyHandler", () => ({
   __esModule: true,
   trimRequestBody: jest.fn((_req, _res, next) => next()),
 }));

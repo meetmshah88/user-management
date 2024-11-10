@@ -3,7 +3,7 @@ import { ErrorType } from "../types/types";
 
 export const errorHandler = (
   err: ErrorType,
-  req: Request,
+  _req: Request,
   res: Response,
   _next: NextFunction,
 ): void => {

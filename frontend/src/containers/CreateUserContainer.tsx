@@ -53,7 +53,7 @@ const CreateUser: React.FC = () => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // Returns true if no errors
+    return Object.keys(newErrors).length === 0; 
   };
 
   const handleClose = (): void => {

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import TopNav from "./TopNav";
+import TopNav from "../TopNav";
 
 const renderWithRouter = (initialPath: string) => {
   return render(

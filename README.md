@@ -26,7 +26,7 @@ Using Docker, the application is packaged for easy deployment, ensuring consiste
 
 ### 2.2. Create User
 - **Purpose**: Provides a form for adding new users.
-- **Functionality**: Input fields for first name, last name, and email. Includes client-side validation (e.g., valid email format) and server-side validation for unique emails.
+- **Functionality**: Input fields for first name, last name, and email. Includes client-side validation (e.g., valid email format) and server-side validation same as front end with unique emails validation.
 - **UI Components**: Material UI `TextField` for inputs and `Button` for submission.
 
 ### 2.3. Notifications
@@ -40,7 +40,7 @@ Using Docker, the application is packaged for easy deployment, ensuring consiste
 ### 3.1. Frontend
 - **Tech Stack**: React with TypeScript, Vite for faster development builds, Material UI for UI components, Axios for making HTTP requests.
 - **Folder Structure**:
-  - `/components` – Reusable React components like table and top nav.
+  - `/components` – Reusable React components(can be) like table and top nav.
   - `/containers` – Main application screens like `UserList` and `CreateUser`.
   - `/types` – TypeScript interfaces and types for props, API responses, and form data.
   - `/constant` – Stores constant values for regex patterns, API URLs, etc.
@@ -159,12 +159,19 @@ npm run cypress:run
   - Unique check performed through API validation.
 
 ### 5.2. Backend Validation
+- **Any Routes Handling**
+  - Handle all the routes. If routes not available then server send 404 with Route not found message in json. 
 - **Schema Validation**:
   - Mongoose schema enforces data types and required fields.
   - Custom validation for email format and uniqueness.
-- **Error Handling**:
+- **All Server Error Handling**:
   - Standardized error messages returned for invalid data and server errors.
-
+- **Trimmed All String values in the request body**
+  - Created a middleware which trimmed all the string values in the request body. 
+- **Incoming Request body Guard**
+  - No one can pass extra key value pair in the request body of Create user. Only expected/defined json can be accepted as request. 
+- **All FirstName/LastName and email validations on backend too**
+  - Validations on the fields are added. If it doesn't match then throws an error with Bad request. 
 ---
 
 ## 6. Implementation Steps
@@ -219,6 +226,7 @@ npm run cypress:run
 ## 8. Scripts and Commands
 
 ### 8.1. Docker Commands
+The below command will take some time to build both the repo. Once it will be done then you can try to visit the above given urls for accessing the application. 
 - **Build and Run Services**:
   ```bash
   docker-compose up --build
@@ -228,6 +236,19 @@ npm run cypress:run
   docker-compose down
   ```
 
+## 9. Run the Frontend and Backend Individually
+
+### 9.1. Run command for starting Separate Frontend 
+- **Start the frontend repo**:
+  ```bash
+  npm run local:watch
+  ```
+### 9.2. Run command for starting Separate Backend 
+- **Start the backend repo**:
+  ```bash
+  npm run dev
+  ```
+
 ---
 
 ## 9. README Setup Instructions
@@ -235,5 +256,5 @@ npm run cypress:run
 ### Installation
 1. **Install Docker and Docker Compose**: Ensure Docker and Docker Compose are installed on your machine.
 2. **Clone the Repository**: Download the code by cloning the repository.
-3. **Configure Environment Variables**: Define the necessary `.env` files for backend.
+3. **Configure Environment Variables**: Define the necessary `.env` files for backend. (temporary pushed into git for running demo)
 4. **Run Docker Compose**: Use Docker Compose to build and run the services.

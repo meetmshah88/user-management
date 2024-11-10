@@ -34,7 +34,7 @@ export default [
       ],
       "no-unused-vars": [
         "warn",
-        { argsIgnorePattern: "^_" }, // handles JavaScript files if needed
+        { argsIgnorePattern: "^_" },
       ]
     },
   },

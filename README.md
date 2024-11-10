@@ -209,7 +209,19 @@ npm run cypress:run
    ```
 
 2. **Set Up Environment Variables**:
-   We should not push the .env in github repo ideally but as a time being i have pushed the .env file which contains mongodb URI within github repo so that you can create the user.
+   Create `.env` files for backend directory with the following structure.
+   **Backend `.env`**:
+   ```env
+   MONGO_URI=<your-cloud-mongodb-uri>
+   PORT=5000
+   ```
+
+   Create `.env` files in root directory with the following structure for docker compose.
+   **Docker Compose `.env`**:
+   ```env
+   MONGO_URI=<your-cloud-mongodb-uri>
+   NODE_ENV=production
+   ```
 
 3. **Run Docker Compose**:
    Build and start all containers using Docker Compose.
@@ -227,6 +239,7 @@ npm run cypress:run
 
 ### 8.1. Docker Commands
 The below command will take some time to build both the repo. Once it will be done then you can try to visit the above given urls for accessing the application. 
+
 - **Build and Run Services**:
   ```bash
   docker-compose up --build
@@ -256,5 +269,5 @@ The below command will take some time to build both the repo. Once it will be do
 ### Installation
 1. **Install Docker and Docker Compose**: Ensure Docker and Docker Compose are installed on your machine.
 2. **Clone the Repository**: Download the code by cloning the repository.
-3. **Configure Environment Variables**: Define the necessary `.env` files for backend. (temporary pushed into git for running demo)
+3. **Configure Environment Variables**: Define the necessary `.env` files for backend and docker compose.
 4. **Run Docker Compose**: Use Docker Compose to build and run the services.

@@ -13,7 +13,7 @@
     "cypress:run": "cypress run",
     "test:all": "npm run lint && npm run test",
     "prebuild": "npm run test:all",
-    "docker:build": "npm run test:all && npm run build"
+    "prod:start": "npm run test:all && npm run build"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",

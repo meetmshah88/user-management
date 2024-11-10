@@ -108,11 +108,22 @@ The **Create User** API expects a JSON payload to add a new user to the system. 
 
 ### 4.2. End-to-End Tests
 
+Make sure that the frontend server is running before you run Cypress tests.
+
+Your running server of frontend (e.g. http://localhost:3000/) then the same needs to be configured in `cypress.config.ts` file with `baseUrl` attribute. 
+
 **Testing Tool**: Cypress
-- **Test Scenario 1**: should display the list of users after loading.
-- **Test Scenario 2**: should display a loading indicator before data loads.
-- **Test Scenario 3**: should display an error message if API request fails creation.
-- **Test Scenario 4**: should display a message if no users are found
+- **List Users E2E**:
+    - **Test Scenario 1**: should display the list of users after loading.
+    - **Test Scenario 2**: should display a loading indicator before data loads.
+    - **Test Scenario 3**: should display an error message if API request fails creation.
+    - **Test Scenario 4**: should display a message if no users are found
+- **Create User E2E**:
+    - **Test Scenario 1**: should display validation errors for empty fields
+    - **Test Scenario 2**: should show validation error for invalid email
+    - **Test Scenario 3**: should submit the form successfully with valid inputs
+    - **Test Scenario 4**: should display error message if API request fails
+    - **Test Scenario 5**: should create a user and verify it appears on the user list page
 
 ---
 
@@ -171,13 +182,7 @@ The **Create User** API expects a JSON payload to add a new user to the system. 
    ```
 
 2. **Set Up Environment Variables**:
-   Create `.env` files for backend directory with the following structure.
-
-   **Backend `.env`**:
-   ```env
-   MONGO_URI=<your-cloud-mongodb-uri>
-   PORT=5000
-   ```
+   We should not push the .env in github repo ideally but as a time being i have pushed the .env file which contains mongodb URI within github repo so that you can create the user.
 
 3. **Run Docker Compose**:
    Build and start all containers using Docker Compose.

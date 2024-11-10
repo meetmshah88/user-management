@@ -39,7 +39,7 @@ const UserList: React.FC = () => {
         <Box
           sx={{ display: "flex", justifyContent: "center", marginTop: "2em" }}
         >
-          <CircularProgress />
+          <CircularProgress data-testid="loading-indicator"/>
         </Box>
       );
     }

@@ -1,7 +1,10 @@
 import express from "express";
-import { createUser, getUsers } from "../controllers/userController";
+import { createUser, getUsers, getUserEmailIDs } from "../controllers/userController";
 
 const userRouter = express.Router();
+
+//Get all emailIDs
+userRouter.get("/users/email", getUserEmailIDs);
 
 // Get all users
 userRouter.get("/users", getUsers);

@@ -64,9 +64,17 @@ const UserList: React.FC = () => {
       return;
     }
 
-    const updatedParam = debouncedText || selectedEmail
-      ? `?${searchParams.toString()}`
-      : url.pathname;
+    const cachedResult = localStorage.getItem(search.toLowerCase());
+    if (cachedResult && !selectedEmail) {
+      const parsedResult = JSON.parse(cachedResult);
+      setUsersList(parsedResult);
+      return;
+    }
+
+    const updatedParam =
+      debouncedText || selectedEmail
+        ? `?${searchParams.toString()}`
+        : url.pathname;
 
     fetchNetworkData(
       `${API_BASE}/api/users${updatedParam === "/" ? "" : updatedParam}`,
@@ -74,6 +82,17 @@ const UserList: React.FC = () => {
     )
       .then((result) => {
         setUsersList(result);
+
+        if (debouncedText && !selectedEmail && !cachedResult) {
+          localStorage.setItem(
+            debouncedText.toLowerCase(),
+            JSON.stringify(result)
+          );
+
+          setTimeout(() => {
+            localStorage.removeItem(debouncedText.toLowerCase());
+          }, 10000);
+        }
       })
       .catch((err) => console.error(err));
 
@@ -103,8 +122,7 @@ const UserList: React.FC = () => {
     } else {
       console.log("EMail needs to remove");
       searchParams.delete("emailFilter");
-    }
-    console.log(searchParams, 'searchParams')
+    }   
     const updatedParams = val
       ? `?${searchParams.toString()}`
       : search

@@ -145,6 +145,17 @@ const UserList: React.FC = () => {
   };
 
   useEffect(() => {
+    const removeCacheOnUnload = () => {
+      const cacheKeys = Object.keys(localStorage);
+
+      if (cacheKeys.length > 0) {
+        for (const key of cacheKeys) {
+          delete localStorage[key];
+        }
+      }
+    };
+
+    window.addEventListener("beforeunload", removeCacheOnUnload);
     //Cancel the pending API call if user leaves the Users List page
     const controller = new AbortController();
 
@@ -187,6 +198,8 @@ const UserList: React.FC = () => {
           delete localStorage[localKey];
         }
       }
+
+      window.removeEventListener("beforeunload", removeCacheOnUnload);
     };
   }, []);
 

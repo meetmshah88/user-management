@@ -52,50 +52,64 @@ export const getUsers = async (
 ): Promise<void> => {
   try {
     console.log(req.query);
-    if (Object.keys(req.query).length > 0) {
-      const { query } = req;
-      const validParams = ["emailFilter", "searchText", "limit", "offset"];
-      if (!Object.keys(req.query).every((el) => validParams.includes(el))) {
-        throwError("Invalid query params!", 400);
-      }
-      const { searchText = "", emailFilter = "", limit = 10, page = 1 } = query;
 
-      const parsedLimit = parseInt(limit as string, 10);
-      const pageNum = parseInt(page as string, 10);
-
-      const offset = parsedLimit * (pageNum - 1);
-
-      const documentsCount = await User.countDocuments();
-
-      const filteredUsers = await User.find({
-        $and: [
-          {
-            $or: [
-              { firstName: { $regex: searchText, $options: "i" } },
-              { lastName: { $regex: searchText, $options: "i" } },
-            ],
-          },
-          emailFilter
-            ? {
-                emailId: emailFilter,
-              }
-            : {},
-        ],
-      })
-        .skip(offset)
-        .limit(parsedLimit)
-        .sort({ createdAt: "desc" });
-      res.json({
-        users: filteredUsers,
-        page: pageNum,
-        limit: parsedLimit,
-        total: documentsCount,
-        totalPages: Math.floor(documentsCount / parsedLimit),
-      });
-    } else {
-      const users = await User.find().sort({ createdAt: "desc" });
-      res.json({ users });
+    const { query } = req;
+    const validParams = ["emailFilter", "searchText", "limit", "page"];
+    if (!Object.keys(req.query).every((el) => validParams.includes(el))) {
+      throwError("Invalid query params!", 400);
     }
+    const { searchText = "", emailFilter = "", limit = 10, page = 1 } = query;
+
+    const parsedLimit = parseInt(limit as string, 10);
+    const pageNum = parseInt(page as string, 10);
+
+    if (!(parsedLimit > 0 && pageNum > 0)) {
+      throwError("Invalid query params!", 400);
+    }
+
+    const offset = parsedLimit * (pageNum - 1);
+
+    const pipeline: any = [
+      {
+        $match: {
+          $and: [
+            {
+              $or: [
+                { firstName: { $regex: searchText, $options: "i" } },
+                { lastName: { $regex: searchText, $options: "i" } },
+              ],
+            },
+            emailFilter
+              ? {
+                  emailId: emailFilter,
+                }
+              : {},
+          ],
+        },
+      },
+      {
+        $facet: {
+          filteredUsers: [
+            { $sort: { createdAt: -1 } },
+            { $skip: offset },
+            { $limit: parsedLimit },
+          ],
+          totalDocumentsCount: [{ $count: "count" }],
+        },
+      },
+    ];
+
+    const results = await User.aggregate(pipeline);
+
+    const filteredUsers = results[0]?.filteredUsers || [];
+    const totalDocumentsCount = results[0]?.totalDocumentsCount[0]?.count || 0;
+
+    res.json({
+      users: filteredUsers,
+      page: pageNum,
+      limit: parsedLimit,
+      count: totalDocumentsCount,
+    });
   } catch (error) {
     next(error);
   }

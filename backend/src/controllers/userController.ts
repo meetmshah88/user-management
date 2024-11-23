@@ -54,11 +54,19 @@ export const getUsers = async (
     console.log(req.query);
     if (Object.keys(req.query).length > 0) {
       const { query } = req;
-      const validParams = ["emailFilter", "searchText"];
+      const validParams = ["emailFilter", "searchText", "limit", "offset"];
       if (!Object.keys(req.query).every((el) => validParams.includes(el))) {
         throwError("Invalid query params!", 400);
       }
-      const { searchText = "", emailFilter = "" } = query;
+      const { searchText = "", emailFilter = "", limit = 10, page = 1 } = query;
+
+      const parsedLimit = parseInt(limit as string, 10);
+      const pageNum = parseInt(page as string, 10);
+
+      const offset = parsedLimit * (pageNum - 1);
+
+      const documentsCount = await User.countDocuments();
+
       const filteredUsers = await User.find({
         $and: [
           {
@@ -73,11 +81,20 @@ export const getUsers = async (
               }
             : {},
         ],
-      }).sort({ createdAt: "desc" });
-      res.json(filteredUsers);
+      })
+        .skip(offset)
+        .limit(parsedLimit)
+        .sort({ createdAt: "desc" });
+      res.json({
+        users: filteredUsers,
+        page: pageNum,
+        limit: parsedLimit,
+        total: documentsCount,
+        totalPages: Math.floor(documentsCount / parsedLimit),
+      });
     } else {
       const users = await User.find().sort({ createdAt: "desc" });
-      res.json(users);
+      res.json({ users });
     }
   } catch (error) {
     next(error);
@@ -92,6 +109,39 @@ export const getUserEmailIDs = async (
   try {
     const emails = await User.find().select("emailId");
     res.status(200).json(emails);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const usersSeedings = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const records = Array.from({ length: 100 }).map((_, index) => {
+      return {
+        firstName: `First User ${index}`,
+        lastName: `Last User ${index}`,
+        emailId: `user${index}@example.com`,
+      };
+    });
+    await User.insertMany(records);
+    res.status(200).send("Sample Users are added");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const usersUnseeded = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    await User.deleteMany({ emailId: { $regex: "@example.com" } });
+    res.status(204).send("Users deleted");
   } catch (error) {
     next(error);
   }

@@ -6,6 +6,14 @@ import TableComponent from "../components/Table.tsx";
 import { API_BASE } from "../constant/data.ts";
 import { useDebounce } from "../hooks/useDebounce.tsx";
 
+type UsersResponseType = {
+  users: UserType[] | [];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+};
+
 type EmailsOptionType = { _id: string; emailId: string }[];
 
 const renderOptions = (emails: EmailsOptionType) => {
@@ -65,9 +73,10 @@ const UserList: React.FC = () => {
     }
 
     const cachedResult = localStorage.getItem(search.toLowerCase());
-    if (cachedResult && !selectedEmail) {
+    if (search && cachedResult && !selectedEmail) {
       const parsedResult = JSON.parse(cachedResult);
-      setUsersList(parsedResult);
+      setUsersList(parsedResult || []);
+      setLoading(false);
       return;
     }
 
@@ -81,12 +90,13 @@ const UserList: React.FC = () => {
       abortController.signal
     )
       .then((result) => {
-        setUsersList(result);
+        const { users } = result as unknown as UsersResponseType;
+        setUsersList(users || []);
 
         if (debouncedText && !selectedEmail && !cachedResult) {
           localStorage.setItem(
             debouncedText.toLowerCase(),
-            JSON.stringify(result)
+            JSON.stringify(users)
           );
 
           setTimeout(() => {
@@ -96,7 +106,9 @@ const UserList: React.FC = () => {
       })
       .catch((err) => console.error(err));
 
-    return () => abortController.abort();
+    return () => {
+      abortController.abort();
+    };
   }, [debouncedText, selectedEmail]);
 
   const handleSearchChange = (searchVal: string): void => {
@@ -120,16 +132,14 @@ const UserList: React.FC = () => {
     if (val) {
       searchParams.set("emailFilter", val);
     } else {
-      console.log("EMail needs to remove");
       searchParams.delete("emailFilter");
-    }   
+    }
     const updatedParams = val
       ? `?${searchParams.toString()}`
       : search
       ? `${window.location.pathname}?${searchParams.toString()}`
       : window.location.pathname;
 
-    console.log("Email updatedParams", updatedParams);
     window.history.pushState(null, "", updatedParams);
     setSelectedEmail(val);
   };
@@ -147,8 +157,9 @@ const UserList: React.FC = () => {
         `${API_BASE}/api/users${updatedParam === "/" ? "" : updatedParam}`,
         controller.signal
       )
-        .then((response) => {
-          setUsersList(response);
+        .then((result) => {
+          const { users } = result as unknown as UsersResponseType;
+          setUsersList(users || []);
         })
         .catch((err) => console.error(err));
     }
@@ -164,7 +175,19 @@ const UserList: React.FC = () => {
         setError(error);
       });
 
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+
+      //remove the localstorage during unmount of component
+
+      const keys = Object.keys(localStorage);
+
+      if (keys.length > 0) {
+        for (const localKey of keys) {
+          delete localStorage[localKey];
+        }
+      }
+    };
   }, []);
 
   const renderContent = () => {

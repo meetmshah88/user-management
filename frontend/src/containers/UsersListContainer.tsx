@@ -10,8 +10,7 @@ type UsersResponseType = {
   users: UserType[] | [];
   page: number;
   limit: number;
-  total: number;
-  totalPages: number;
+  count: number;
 };
 
 type EmailsOptionType = { _id: string; emailId: string }[];
@@ -27,11 +26,14 @@ const renderOptions = (emails: EmailsOptionType) => {
 };
 
 const UserList: React.FC = () => {
-  const url = new URL(window.location.href);
   const searchParams = new URLSearchParams(window.location.search);
   const [usersList, setUsersList] = useState<UserType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [emailOptions, setEmailOptions] = useState<EmailsOptionType>([]);
+  const [limit, setLimit] = useState("5");
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentWindow, setCurrentWindow] = useState<number[]>([]);
   const [selectedEmail, setSelectedEmail] = useState<string>(
     searchParams.get("emailFilter") || ""
   );
@@ -72,44 +74,57 @@ const UserList: React.FC = () => {
       return;
     }
 
-    const cachedResult = localStorage.getItem(search.toLowerCase());
-    if (search && cachedResult && !selectedEmail) {
-      const parsedResult = JSON.parse(cachedResult);
-      setUsersList(parsedResult || []);
-      setLoading(false);
-      return;
-    }
+    // const cachedResult = localStorage.getItem(search.toLowerCase());
+    // if (search && cachedResult && !selectedEmail) {
+    //   const parsedResult = JSON.parse(cachedResult);
+    //   setUsersList(parsedResult || []);
+    //   setLoading(false);
+    //   return;
+    // }
 
     const updatedParam =
-      debouncedText || selectedEmail
-        ? `?${searchParams.toString()}`
-        : url.pathname;
+      debouncedText || selectedEmail ? `&${searchParams.toString()}` : "";
 
     fetchNetworkData(
-      `${API_BASE}/api/users${updatedParam === "/" ? "" : updatedParam}`,
+      `${API_BASE}/api/users?page=${currentPage}&limit=${limit}${updatedParam}`,
       abortController.signal
     )
       .then((result) => {
-        const { users } = result as unknown as UsersResponseType;
+        const { users, count } = result as unknown as UsersResponseType;
         setUsersList(users || []);
 
-        if (debouncedText && !selectedEmail && !cachedResult) {
-          localStorage.setItem(
-            debouncedText.toLowerCase(),
-            JSON.stringify(users)
-          );
+        const totalPagesCalculated = Math.ceil(count / parseInt(limit, 10));
+        setTotalPages(count > parseInt(limit, 10) ? totalPagesCalculated : 0);
 
-          setTimeout(() => {
-            localStorage.removeItem(debouncedText.toLowerCase());
-          }, 10000);
-        }
+        // Do not cache if the email id is selected as didn't implement the combinations
+        // if (debouncedText && !selectedEmail && !cachedResult) {
+        //   localStorage.setItem(
+        //     debouncedText.toLowerCase(),
+        //     JSON.stringify(users)
+        //   );
+
+        //   setTimeout(() => {
+        //     localStorage.removeItem(debouncedText.toLowerCase());
+        //   }, 10000);
+        // }
       })
       .catch((err) => console.error(err));
 
     return () => {
       abortController.abort();
     };
-  }, [debouncedText, selectedEmail]);
+  }, [debouncedText, selectedEmail, currentPage, limit]);
+
+  useEffect(() => {
+    if (totalPages > 3) {
+      setCurrentWindow([1, 2, 3]);
+    } else if (totalPages > 0) {
+      const currentPagesWindow = Array.from({
+        length: totalPages,
+      }).map((_, index) => index + 1);
+      setCurrentWindow(currentPagesWindow);
+    }
+  }, [totalPages]);
 
   const handleSearchChange = (searchVal: string): void => {
     if (searchVal) {
@@ -125,6 +140,7 @@ const UserList: React.FC = () => {
       : window.location.pathname;
 
     window.history.pushState(null, "", updatedParams);
+    setCurrentPage(1);
     setSearch(searchVal);
   };
 
@@ -142,6 +158,30 @@ const UserList: React.FC = () => {
 
     window.history.pushState(null, "", updatedParams);
     setSelectedEmail(val);
+    setCurrentPage(1);
+  };
+
+  const renderPages = () => {
+    let renderButtons = [];
+    for (let i = 0; i < currentWindow.length; i++) {
+      console.log("Inside for", currentWindow);
+      const button = (
+        <button
+          id={`button-${currentWindow[i] + 1}`}
+          key={`button-${currentWindow[i] + 1}`}
+          onClick={() => setCurrentPage(currentWindow[i])}
+          style={{
+            backgroundColor:
+              currentPage === currentWindow[i] ? "grey" : "revert",
+          }}
+        >
+          {currentWindow[i]}
+        </button>
+      );
+      renderButtons.push(button);
+    }
+
+    return renderButtons;
   };
 
   useEffect(() => {
@@ -160,17 +200,17 @@ const UserList: React.FC = () => {
     const controller = new AbortController();
 
     if (!search) {
-      const updatedParam = search
-        ? `?${searchParams.toString()}`
-        : url.pathname;
+      const updatedParam = selectedEmail ? `&${searchParams.toString()}` : "";
 
       fetchNetworkData(
-        `${API_BASE}/api/users${updatedParam === "/" ? "" : updatedParam}`,
+        `${API_BASE}/api/users?page=${currentPage}&limit=${limit}${updatedParam}`,
         controller.signal
       )
         .then((result) => {
-          const { users } = result as unknown as UsersResponseType;
+          const { users, count } = result as unknown as UsersResponseType;
           setUsersList(users || []);
+          const totalPagesCalculated = Math.ceil(count / parseInt(limit, 10));
+          setTotalPages(count > parseInt(limit, 10) ? totalPagesCalculated : 0);
         })
         .catch((err) => console.error(err));
     }
@@ -244,6 +284,40 @@ const UserList: React.FC = () => {
     );
   };
 
+  const onBackHandler = () => {
+    setCurrentPage(currentPage - 1);
+    if (!currentWindow.includes(currentPage - 1)) {
+      const clonedCurrentWindow = [...currentWindow];
+      const newPage = clonedCurrentWindow[0] - 1;
+      clonedCurrentWindow.pop();
+      clonedCurrentWindow.unshift(newPage);
+      console.log(clonedCurrentWindow);
+      setCurrentWindow(clonedCurrentWindow);
+    }
+  };
+
+  const onNextHandler = () => {
+    setCurrentPage(currentPage + 1);
+    if (!currentWindow.includes(currentPage + 1)) {
+      const clonedCurrentWindow = [...currentWindow];
+      console.log("clonedCurrentWindow", clonedCurrentWindow);
+      const newPage = clonedCurrentWindow[clonedCurrentWindow.length - 1] + 1;
+      clonedCurrentWindow.shift();
+      clonedCurrentWindow.push(newPage);
+      console.log(clonedCurrentWindow);
+      setCurrentWindow(clonedCurrentWindow);
+    }
+  };
+
+  const limitChangeHandler = (val: string) => {
+    setLimit(val);
+    setCurrentPage(1);
+  }
+
+  const hideBackButton = currentPage === 1 || totalPages < 4;
+
+  const hideNextButton = currentPage === totalPages || totalPages < 4;
+
   return (
     <Box sx={{ padding: 2 }}>
       <Typography variant="h5" gutterBottom>
@@ -274,6 +348,36 @@ const UserList: React.FC = () => {
             <option value="">Any</option>
             {renderOptions(emailOptions)}
           </select>
+        </div>
+        <div>
+          <label htmlFor="perPage">Results Per Page</label>
+          <select
+            id="perPage"
+            value={limit}
+            onChange={(e) => limitChangeHandler(e.target.value)}
+            name="perPage"
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+          </select>
+        </div>
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div>
+          {!hideBackButton && (
+            <button id="back" onClick={onBackHandler}>
+              Back
+            </button>
+          )}
+        </div>
+        <div>{totalPages > 0 && renderPages()}</div>
+        <div>
+          {!hideNextButton && (
+            <button id="next" onClick={onNextHandler}>
+              Next
+            </button>
+          )}
         </div>
       </div>
       {renderContent()}

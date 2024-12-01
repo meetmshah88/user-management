@@ -25,6 +25,12 @@ const TopNav: React.FC = () => {
             component={Link}
             to="/create-user"
           />
+          <Tab 
+            label="Slider"
+            value="/slider"
+            component={Link}
+            to="/slider"
+          />
         </Tabs>
       </Toolbar>
     </AppBar>

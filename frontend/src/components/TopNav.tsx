@@ -31,6 +31,12 @@ const TopNav: React.FC = () => {
             component={Link}
             to="/slider"
           />
+          <Tab 
+            label="Batch"
+            value="/batch"
+            component={Link}
+            to="/batch"
+          />
         </Tabs>
       </Toolbar>
     </AppBar>
